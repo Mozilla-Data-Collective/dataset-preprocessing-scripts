@@ -1,0 +1,12 @@
+[project]
+name = "elan-preprocess"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipython>=9.7.0",
+    "lxml>=6.0.2",
+    "pydub>=0.25.1",
+    "speach>=0.1a8",
+]
