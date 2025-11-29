@@ -8,5 +8,6 @@ dependencies = [
     "ipython>=9.7.0",
     "lxml>=6.0.2",
     "pydub>=0.25.1",
+    "rich>=14.2.0",
     "speach>=0.1a8",
 ]
