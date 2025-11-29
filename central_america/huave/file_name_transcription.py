@@ -2,11 +2,7 @@ import re
 import os
 import uuid
 import glob
-from utils import load_audio, update_tsv_file
-
-BASE_PATH = "file_name_transcriptions/entonacion_huave_gama"
-OUTPUT_CLIPS = "clips"
-OUTPUT_TSV_FILE = "huave_corpus.tsv"
+from utils import load_audio
 
 
 def extract_tags(transcription: str):
@@ -17,20 +13,16 @@ def extract_tags(transcription: str):
     return clean_text, tags
 
 
-def process_audios():
+def process_audios(base_path, output_path):
     data = []
-    if not os.path.exists(OUTPUT_CLIPS):
-        os.makedirs(OUTPUT_CLIPS)
-        print(f"Created dir: {OUTPUT_CLIPS}")
-
-    for file in glob.glob(os.path.join(BASE_PATH, "*.wav")):
+    for file in glob.glob(os.path.join(base_path, "*.wav")):
         audio_id = uuid.uuid4()
         audio = load_audio(file)
         file_name = file.split("/")[-1]
         audio_duration = len(audio)
         transcription, tags = extract_tags(file_name)
         new_audio_file = f"{audio_id}.wav"
-        audio.export(os.path.join(OUTPUT_CLIPS, new_audio_file), format="wav")
+        audio.export(os.path.join(output_path, new_audio_file), format="wav")
         data.append(
             [
                 str(audio_id),
@@ -42,16 +34,4 @@ def process_audios():
                 file_name,
             ]
         )
-    header = [
-        "audio_id",
-        "audio_file",
-        "duration_ms",
-        "transcription",
-        "translation",
-        "tags",
-        "original_audio_name",
-    ]
-    update_tsv_file(OUTPUT_TSV_FILE, data, header)
-
-
-process_audios()
+    return data

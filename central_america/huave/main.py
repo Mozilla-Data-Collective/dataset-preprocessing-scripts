@@ -8,7 +8,8 @@ from elan_preprocessor import (
     get_valid_sorted_items,
     slice_and_export_audio,
 )
-
+from file_name_transcription import process_audios
+from audio_converter import convert_audios_to_mono_mp3
 from utils import load_audio, update_tsv_file
 
 OUTPUT_PATH = argv[1]
@@ -40,6 +41,13 @@ def main():
         # Creating TSV file with header
         update_tsv_file(output_tsv_file, [], TSV_HEADER)
 
+    # Pre-process/Normalize Raw Audios ---
+    # Convert all inputs in RAW_AUDIOS_PATH to standardized MP3s in the output folder
+    print("--- Starting Audio Normalization ---")
+    convert_audios_to_mono_mp3(RAW_AUDIOS_PATH, output_raw_audios_dir)
+    print("--- Audio Normalization Done ---\n")
+
+    print("--- Starting ELAN Files processing---")
     # 1. Elan Data processing
     for file in glob.glob(os.path.join(ELAN_DATA_PATH, "*", "*.eaf")):
         elan_data = get_data_from_elan_file(file)
@@ -85,11 +93,20 @@ def main():
             except Exception as e:
                 # Catch errors related to data structure, but not file I/O (which is caught inside _slice_and_export_audio)
                 print(f"  ERROR processing clip data for {key}: {e}")
-        # 3. Update the final manifest tsv file
+        # Update the final manifest tsv file
         update_tsv_file(output_tsv_file, tsv_data)
         print(
             f"Successfully generated {len(tsv_data)} audio clips in '{output_tsv_file}' (missing count={len(elan_data) - len(tsv_data)})"
         )
+        print("--- ELAN Files processing DONE---")
+
+        print("--- Tramscription processing ---")
+        # Process audios with transcriptions in their name files
+        transcription_data = process_audios(FILE_NAME_TRANS_PATH, output_clips_dir)
+        # update the final manifest tsv file
+        update_tsv_file(output_tsv_file, transcription_data)
+        print(f"Successfully update {len(transcription_data)} rows on tsv file")
+        print("--- Transcription processing DONE---")
 
 
 if __name__ == "__main__":

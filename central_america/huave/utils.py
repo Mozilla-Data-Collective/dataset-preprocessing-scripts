@@ -3,10 +3,10 @@ import csv
 from pydub import AudioSegment
 
 
-def load_audio(audio_file_path: str, format: str = "wav"):
+def load_audio(audio_file_path: str):
     try:
         print(f"Loading audio file: {audio_file_path}...")
-        full_audio = AudioSegment.from_wav(audio_file_path)
+        full_audio = AudioSegment.from_file(audio_file_path)
         audio_mono = full_audio.set_channels(1)
         print("Audio loaded successfully.")
     except FileNotFoundError:
