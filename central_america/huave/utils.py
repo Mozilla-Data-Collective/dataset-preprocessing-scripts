@@ -1,8 +1,9 @@
+import os
 import csv
 from pydub import AudioSegment
 
 
-def load_audio(audio_file_path: str):
+def load_audio(audio_file_path: str, format: str = "wav"):
     try:
         print(f"Loading audio file: {audio_file_path}...")
         full_audio = AudioSegment.from_wav(audio_file_path)
@@ -17,11 +18,18 @@ def load_audio(audio_file_path: str):
     return audio_mono
 
 
-def update_tsv_file(tsv_file_name: str, data: list, header: list):
-    with open(tsv_file_name, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f, delimiter="\t")
-        # Write header
-        if header:
-            writer.writerow(header)
-        # Write all data rows
-        writer.writerows(data)
+def update_tsv_file(tsv_file_name: str, data: list, header: list = []):
+    # Ensure TSV file exists
+    os.makedirs(os.path.dirname(tsv_file_name), exist_ok=True)
+    try:
+        with open(tsv_file_name, "a", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f, delimiter="\t")
+            # Write header
+            if header:
+                writer.writerow(header)
+            if data:
+                # Write all data rows
+                writer.writerows(data)
+    except Exception as e:
+        print(f"\nERROR: Could not update TSV file: {e}")
+        raise e
